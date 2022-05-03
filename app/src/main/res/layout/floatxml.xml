@@ -22,9 +22,8 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:alpha="1"
-            android:padding="5dp"
+            android:background="#ff0000"
             android:scaleType="fitXY"
-            android:src="@drawable/red"
             tools:layout_conversion_absoluteHeight="731dp"
             tools:layout_conversion_absoluteWidth="411dp"
             tools:layout_editor_absoluteX="0dp"
@@ -37,17 +36,16 @@
         android:id="@+id/clock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:clock_type="numeric"
-        app:border_style="rounded_rectangle"
         app:border_color="@color/black"
+        app:border_radius_rx="15"
+        app:border_style="rounded_rectangle"
 
-        app:border_radius_rx="15"/>
+        app:clock_type="numeric" />
 
     <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:padding="10dp"
-        android:layout_width="408dp"
-        android:layout_height="101dp"
-        android:layout_marginStart="2dp"
         app:alignContent="stretch"
         app:alignItems="stretch"
         app:flexWrap="wrap"
@@ -56,23 +54,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/trg">
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="107dp"
-            android:layout_height="101dp"
-            app:srcCompat="@android:drawable/sym_action_call" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
 
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="107dp"
-            android:layout_height="101dp"
-            app:srcCompat="@android:drawable/ic_dialog_email" />
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="35dp">
 
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="107dp"
-            android:layout_height="101dp"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/call" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardCornerRadius="35dp"
+            app:cardBackgroundColor="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/message" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btn3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:cardCornerRadius="35dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@android:color/transparent">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/camera" />
+        </androidx.cardview.widget.CardView>
 
     </com.google.android.flexbox.FlexboxLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package org.unlock.receiver;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,23 +9,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 
 public class ScreenListenerService extends Service {
 
+    private static final String ACTION_STOP_LISTEN = "action_stop_listen";
 
     BroadcastReceiver screenReceiver;
 
@@ -36,9 +36,20 @@ public class ScreenListenerService extends Service {
         return null;
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && ACTION_STOP_LISTEN.equals(intent.getAction())) {
+            stopForeground(true);
+
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor ed = sp.edit();
+
+            ed.putBoolean("on",false);
+
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         startRunningInForeground();
         detectingDeterminateOfServiceCall(intent.getExtras());
         registerBroadcastReceivers();
@@ -51,8 +62,8 @@ public class ScreenListenerService extends Service {
         if (Build.VERSION.SDK_INT >= 26) {
 
             //if more than 26
-            if(Build.VERSION.SDK_INT > 26){
-                String CHANNEL_ONE_ID = "sensor.example. geyerk1.inspect.screenservice";
+            if (Build.VERSION.SDK_INT > 26) {
+                String CHANNEL_ONE_ID = "sensor.inspect.screenservice";
                 String CHANNEL_ONE_NAME = "Screen service";
                 NotificationChannel notificationChannel = null;
                 notificationChannel = new NotificationChannel(CHANNEL_ONE_ID,
@@ -66,13 +77,18 @@ public class ScreenListenerService extends Service {
                     manager.createNotificationChannel(notificationChannel);
                 }
 
+                Intent stopSelf = new Intent(this, ScreenListenerService.class);
+                stopSelf.setAction(ACTION_STOP_LISTEN);
+                PendingIntent pStopSelf = PendingIntent.getService(this, 0, stopSelf, 0);
+
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_background);
                 Notification notification = new Notification.Builder(getApplicationContext())
                         .setChannelId(CHANNEL_ONE_ID)
                         .setContentTitle("Running")
-                        .setContentText("Service running")
+                        .setContentText("Unlock handler is running")
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setLargeIcon(icon)
+                        .addAction(R.drawable.ic, "Stop", pStopSelf)
                         .build();
 
                 Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
@@ -82,16 +98,16 @@ public class ScreenListenerService extends Service {
                 startForeground(101, notification);
             }
             //if version 26
-            else{
+            else {
                 startForeground(101, updateNotification());
 
             }
         }
         //if less than version 26
-        else{
+        else {
             Notification notification = new NotificationCompat.Builder(this)
-                    .setContentTitle("Activity logger")
-                    .setContentText("data recording on going")
+                    .setContentTitle("Running")
+                    .setContentText("Unlock handler is running")
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setOngoing(true).build();
 
@@ -114,28 +130,26 @@ public class ScreenListenerService extends Service {
     }
 
     private void detectingDeterminateOfServiceCall(Bundle b) {
-        if(b != null){
+        if (b != null) {
             Log.i("screenService", "bundle not null");
-           // if(b.getBoolean("phone restarted")){
-                //storeInternally("Phone restarted");
-           // }
-        }else{
+            // if(b.getBoolean("phone restarted")){
+            //storeInternally("Phone restarted");
+            // }
+        } else {
             Log.i("screenService", " bundle equals null");
         }
         documentServiceStart();
     }
 
-
     private void documentServiceStart() {
         Log.i("screenService", "started running");
     }
-
 
     private void registerBroadcastReceivers() {
         screenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                switch (Objects.requireNonNull(intent.getAction())){
+                switch (Objects.requireNonNull(intent.getAction())) {
                     case Intent.ACTION_SCREEN_ON:
                         //or do something else
                         //storeInternally("Screen on");
@@ -143,7 +157,7 @@ public class ScreenListenerService extends Service {
                         break;
                     case Intent.ACTION_SCREEN_OFF:
                         //or do something else
-                            //storeInternally("Screen off");
+                        //storeInternally("Screen off");
                         Intent launchIntent = new Intent(context, OverlayScreen.class);
                         if (launchIntent != null) {
                             startService(launchIntent);//null pointer check in case package name was not found
@@ -159,6 +173,7 @@ public class ScreenListenerService extends Service {
 
         registerReceiver(screenReceiver, screenFilter);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

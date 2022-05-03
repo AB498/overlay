@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -24,7 +26,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import com.arbelkilani.clock.Clock;
 
@@ -33,12 +37,13 @@ public class OverlayScreen extends Service {
     WindowManager wm;
     WindowManager.LayoutParams params;
     View overlay;
-
+CardView btn1,btn2,btn3;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 
     @Override
     public void onCreate() {
@@ -52,12 +57,10 @@ public class OverlayScreen extends Service {
             {
                 if (event.getKeyCode() == KeyEvent.KEYCODE_BACK)
                 {
-                    // handle back press
-                    Toast.makeText(getApplicationContext(),"back",Toast.LENGTH_SHORT).show();
-onDestroy();
-                    // if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    onDestroy();
                     return true;
                 }
+
                 return super.dispatchKeyEvent(event);
             }
 
@@ -86,26 +89,58 @@ onDestroy();
                     PixelFormat.TRANSLUCENT);
         }
 
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useWallpaper=false;
+        useWallpaper=sp.getBoolean("use_wallpaper",false);
 
-        final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //
-            requestPermission();
-            //                                        int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if(useWallpaper) {
+
+            final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //
+                requestPermission();
+                //                                        int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+
+            ImageView img = overlay.findViewById(R.id.background_img);
+            img.setImageDrawable(wallpaperDrawable);
+        }else{
+            ImageView img = overlay.findViewById(R.id.background_img);
+            int col=sp.getInt("color_picker", Color.RED);
+            img.setBackgroundColor(col);
         }
-        final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-
-        ImageView img=overlay.findViewById(R.id.background_img);
-        img.setImageDrawable(wallpaperDrawable);
-
         wm.addView(wrapper, params);
+
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                startActivity(intent);
+            }
+        });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_APP_MESSAGING);
+                startActivity(intent);
+            }
+        });
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
+            }
+        });
 
         setListeners();
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Main">
+
+        <SwitchPreferenceCompat
+            android:key="on"
+            android:summary="Whether to show overlay"
+            android:title="Turn On" />
+
+        <SwitchPreferenceCompat
+            android:key="use_wallpaper"
+            android:summary="Use Wallpaper as Background"
+            android:title="Wallpaper Background" />
+
+
+        <Preference
+            android:key="color_picker"
+            android:summary="Background color of overlay"
+            android:title="Choose Background Color" />
+
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>
