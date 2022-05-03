@@ -1,7 +1,6 @@
 package org.unlock.receiver;
 
 import android.Manifest;
-import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,80 +8,49 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
-import android.provider.Settings;
-import android.view.KeyEvent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
 import com.arbelkilani.clock.Clock;
 
-public class OverlayScreen extends Service {
-
-    WindowManager wm;
-    WindowManager.LayoutParams params;
+public class ScreenActivity extends AppCompatActivity {
     View overlay;
     CardView btn1, btn2, btn3;
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+MainActivity.act.finish();
+        overlay = LayoutInflater.from(this).inflate(R.layout.floatxml, null);
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
 
-        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        ViewGroup wrapper = new FrameLayout(this) {
+        try
+        {
+            this.getSupportActionBar().hide();
+        }
+        catch (NullPointerException e){}
 
-            @Override
-            public boolean dispatchKeyEvent(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    onDestroy();
-                    return true;
-                }
 
-                return super.dispatchKeyEvent(event);
-            }
+        setContentView(overlay);
 
-        };
 
-        overlay = LayoutInflater.from(this).inflate(R.layout.floatxml, wrapper);
+
         //floatText = mFloatingView.findViewById(R.id.floatTxt);
         Clock clock = overlay.findViewById(R.id.clock);
         //clock.setClockBackground(R.drawable.background_1);
         clock.setShowSecondsNeedle(true);
         clock.setShowHoursValues(true);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-                    PixelFormat.TRANSLUCENT);
-        } else {
-            params = new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-                    PixelFormat.TRANSLUCENT);
-        }
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean useWallpaper = false;
@@ -130,7 +98,6 @@ public class OverlayScreen extends Service {
             int col = sp.getInt("color_picker", Color.RED);
             img.setBackgroundColor(col);
         }
-        wm.addView(wrapper, params);
 
         btn1 = overlay.findViewById(R.id.btn1);
         btn2 = overlay.findViewById(R.id.btn2);
@@ -142,7 +109,7 @@ public class OverlayScreen extends Service {
 
                 Intent intent = new Intent(Intent.ACTION_DIAL).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                onDestroy();
+                finish();
             }
         });
         btn2.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +118,7 @@ public class OverlayScreen extends Service {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_APP_MESSAGING).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                onDestroy();
+                finish();
             }
         });
         btn3.setOnClickListener(new View.OnClickListener() {
@@ -159,80 +126,10 @@ public class OverlayScreen extends Service {
             public void onClick(View view) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                onDestroy();
+                finish();
             }
         });
 
-        setListeners();
 
     }
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_MANAGE_MEDIA);
-                intent.addCategory("android.intent.category.DEFAULT");
-                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-                MainActivity.act.startActivityForResult(intent, 2296);
-            } catch (Exception e) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_REQUEST_MANAGE_MEDIA);
-                MainActivity.act.startActivityForResult(intent, 2296);
-            }
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.act, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    1);
-
-        }
-    }
-
-    public void setListeners() {
-
-        overlay.findViewById(R.id.ll).setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        return true;
-
-                    case MotionEvent.ACTION_UP:
-
-                        //Toast.makeText(getApplicationContext(),initialX+" "+params.x,Toast.LENGTH_SHORT).show();
-                        try {
-                            //wm.removeView(overlay);
-                        } catch (Exception e) {
-                        }
-                        //onDestroy();
-                        return true;
-
-                    case MotionEvent.ACTION_MOVE:
-
-                        return true;
-                }
-                return false;
-            }
-        });
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-        try {
-            wm.removeView(overlay);
-        } catch (Exception e) {
-        }
-
-        stopSelf();
-    }
-
-
-
 }

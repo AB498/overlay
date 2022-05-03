@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -158,10 +159,15 @@ public class ScreenListenerService extends Service {
                     case Intent.ACTION_SCREEN_OFF:
                         //or do something else
                         //storeInternally("Screen off");
-                        Intent launchIntent = new Intent(context, OverlayScreen.class);
+                        /*Intent launchIntent = new Intent(context, OverlayScreen.class);
                         if (launchIntent != null) {
                             startService(launchIntent);//null pointer check in case package name was not found
-                        }
+                        }*/
+
+                        Intent i = new Intent(getApplicationContext(),ScreenActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+
+
                         break;
                 }
             }

@@ -17,6 +17,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Log.v("App", "Build Version Greater than or equal to M: " + Build.VERSION_CODES.M);
-            checkDrawOverlayPermission();
+            //checkDrawOverlayPermission();
         } else {
             Log.v("App", "OS Version Less than M");
             //No need for Permission as less then M OS.
@@ -150,4 +151,12 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
         return false;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+@Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+}
 }

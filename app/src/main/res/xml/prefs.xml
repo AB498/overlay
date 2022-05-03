@@ -6,17 +6,27 @@
     <PreferenceCategory android:title="Main">
 
         <SwitchPreferenceCompat
+            android:key="toggle_overlay"
+            android:summaryOff="Tap to enable overlay permission"
+            android:summaryOn="Overlay enabled"
+            android:title="Enable Overlay" />
+
+        <SwitchPreferenceCompat
+            android:dependency="toggle_overlay"
             android:key="on"
             android:summary="Whether to show overlay"
             android:title="Turn On" />
 
         <SwitchPreferenceCompat
+            android:dependency="toggle_overlay"
+            android:disableDependentsState="true"
             android:key="use_wallpaper"
-            android:summary="Use Wallpaper as Background"
+            android:summary="You need to manually accept file permission for this app"
             android:title="Wallpaper Background" />
 
 
         <Preference
+            android:dependency="use_wallpaper"
             android:key="color_picker"
             android:summary="Background color of overlay"
             android:title="Choose Background Color" />
