@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
@@ -37,13 +35,13 @@ public class OverlayScreen extends Service {
     WindowManager wm;
     WindowManager.LayoutParams params;
     View overlay;
-CardView btn1,btn2,btn3;
+    CardView btn1, btn2, btn3;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-
 
     @Override
     public void onCreate() {
@@ -53,10 +51,8 @@ CardView btn1,btn2,btn3;
         ViewGroup wrapper = new FrameLayout(this) {
 
             @Override
-            public boolean dispatchKeyEvent(KeyEvent event)
-            {
-                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK)
-                {
+            public boolean dispatchKeyEvent(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     onDestroy();
                     return true;
                 }
@@ -72,7 +68,6 @@ CardView btn1,btn2,btn3;
         //clock.setClockBackground(R.drawable.background_1);
         clock.setShowSecondsNeedle(true);
         clock.setShowHoursValues(true);
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             params = new WindowManager.LayoutParams(
@@ -90,10 +85,10 @@ CardView btn1,btn2,btn3;
         }
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean useWallpaper=false;
-        useWallpaper=sp.getBoolean("use_wallpaper",false);
+        boolean useWallpaper = false;
+        useWallpaper = sp.getBoolean("use_wallpaper", false);
 
-        if(useWallpaper) {
+        if (useWallpaper) {
 
             final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -112,38 +107,45 @@ CardView btn1,btn2,btn3;
 
             ImageView img = overlay.findViewById(R.id.background_img);
             img.setImageDrawable(wallpaperDrawable);
-        }else{
+        } else {
             ImageView img = overlay.findViewById(R.id.background_img);
-            int col=sp.getInt("color_picker", Color.RED);
+            int col = sp.getInt("color_picker", Color.RED);
             img.setBackgroundColor(col);
         }
         wm.addView(wrapper, params);
 
+        btn1 = overlay.findViewById(R.id.btn1);
+        btn2 = overlay.findViewById(R.id.btn2);
+        btn3 = overlay.findViewById(R.id.btn3);
+
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
+
+                Intent intent = new Intent(Intent.ACTION_DIAL).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                onDestroy();
             }
         });
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_APP_MESSAGING);
+                intent.addCategory(Intent.CATEGORY_APP_MESSAGING).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                onDestroy();
             }
         });
         btn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                onDestroy();
             }
         });
 
         setListeners();
-
 
     }
 
@@ -152,15 +154,20 @@ CardView btn1,btn2,btn3;
             try {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 intent.addCategory("android.intent.category.DEFAULT");
-                intent.setData(Uri.parse(String.format("package:%s",getApplicationContext().getPackageName())));
-                ((Activity)getApplicationContext()).startActivityForResult(intent, 2296);
+                intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                ((Activity) getApplicationContext()).startActivityForResult(intent, 2296);
             } catch (Exception e) {
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                ((Activity)getApplicationContext()).startActivityForResult(intent, 2296);
+                ((Activity) getApplicationContext()).startActivityForResult(intent, 2296);
             }
-        } else {}
+        } else {
+            ActivityCompat.requestPermissions(((Activity) getApplicationContext()),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    1);
+        }
     }
+
     public void setListeners() {
 
         overlay.findViewById(R.id.ll).setOnTouchListener(new View.OnTouchListener() {

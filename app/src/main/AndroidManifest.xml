@@ -28,4 +28,7 @@
 
     </application>
 
+    <queries>
+        <package android:name="com.android.camera" />
+    </queries>
 </manifest>
