@@ -1,5 +1,6 @@
 package org.unlock.receiver;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -29,10 +30,12 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
 
     public final static int REQUEST_CODE = -1010101;
     static TextView tv;
+    public static Activity act;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.act=this;
 
         if (getIntent().getStringExtra("crash") != null) {
             String mLog = getIntent().getStringExtra("crashInfo");

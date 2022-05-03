@@ -162,8 +162,7 @@ public class OverlayScreen extends Service {
                 ((Activity) getApplicationContext()).startActivityForResult(intent, 2296);
             }
         } else {
-            ActivityCompat.requestPermissions(((Activity) getApplicationContext()),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(MainActivity.act, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     1);
 
         }
