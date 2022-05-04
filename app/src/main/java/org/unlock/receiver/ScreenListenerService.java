@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,9 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -28,7 +25,6 @@ import java.util.Objects;
 public class ScreenListenerService extends Service {
 
     private static final String ACTION_STOP_LISTEN = "action_stop_listen";
-
     BroadcastReceiver screenReceiver;
 
     @Nullable
@@ -45,14 +41,13 @@ public class ScreenListenerService extends Service {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences.Editor ed = sp.edit();
 
-            ed.putBoolean("on",false);
+            ed.putBoolean("on", false);
 
             stopSelf();
             return START_NOT_STICKY;
         }
 
         startRunningInForeground();
-        detectingDeterminateOfServiceCall(intent.getExtras());
         registerBroadcastReceivers();
         return START_STICKY;
     }
@@ -130,44 +125,16 @@ public class ScreenListenerService extends Service {
                 .setOngoing(true).build();
     }
 
-    private void detectingDeterminateOfServiceCall(Bundle b) {
-        if (b != null) {
-            Log.i("screenService", "bundle not null");
-            // if(b.getBoolean("phone restarted")){
-            //storeInternally("Phone restarted");
-            // }
-        } else {
-            Log.i("screenService", " bundle equals null");
-        }
-        documentServiceStart();
-    }
-
-    private void documentServiceStart() {
-        Log.i("screenService", "started running");
-    }
-
     private void registerBroadcastReceivers() {
         screenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 switch (Objects.requireNonNull(intent.getAction())) {
                     case Intent.ACTION_SCREEN_ON:
-                        //or do something else
-                        //storeInternally("Screen on");
-
                         break;
                     case Intent.ACTION_SCREEN_OFF:
-                        //or do something else
-                        //storeInternally("Screen off");
-                        /*Intent launchIntent = new Intent(context, OverlayScreen.class);
-                        if (launchIntent != null) {
-                            startService(launchIntent);//null pointer check in case package name was not found
-                        }*/
-
-                        Intent i = new Intent(getApplicationContext(),ScreenActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
-
-
+                        Intent launchIntent = new Intent(context, OverlayScreen.class);
+                        startService(launchIntent);
                         break;
                 }
             }

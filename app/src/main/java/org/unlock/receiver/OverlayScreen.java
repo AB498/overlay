@@ -9,13 +9,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -27,8 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
-
-import com.arbelkilani.clock.Clock;
 
 public class OverlayScreen extends Service {
 
@@ -63,11 +58,6 @@ public class OverlayScreen extends Service {
         };
 
         overlay = LayoutInflater.from(this).inflate(R.layout.floatxml, wrapper);
-        //floatText = mFloatingView.findViewById(R.id.floatTxt);
-        Clock clock = overlay.findViewById(R.id.clock);
-        //clock.setClockBackground(R.drawable.background_1);
-        clock.setShowSecondsNeedle(true);
-        clock.setShowHoursValues(true);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             params = new WindowManager.LayoutParams(
@@ -91,40 +81,21 @@ public class OverlayScreen extends Service {
         if (useWallpaper) {
 
             if (ActivityCompat.checkSelfPermission(MainActivity.act, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //requestPermission();
-                //                                        int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-
-                    ActivityCompat.requestPermissions(MainActivity.act, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-
-                }else{
-                    Toast.makeText(this,"File permission not provided",Toast.LENGTH_SHORT).show();
+                    ActivityCompat.requestPermissions(MainActivity.act, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                } else {
+                    Toast.makeText(this, "File permission not provided", Toast.LENGTH_SHORT).show();
                 }
-
                 final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-
                 final Drawable wallpaperDrawable = wallpaperManager.getBuiltInDrawable();
-
                 ImageView img = overlay.findViewById(R.id.background_img);
                 img.setImageDrawable(wallpaperDrawable);
-            }else{
-
+            } else {
                 final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-
                 final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-
                 ImageView img = overlay.findViewById(R.id.background_img);
                 img.setImageDrawable(wallpaperDrawable);
-
             }
-
         } else {
             ImageView img = overlay.findViewById(R.id.background_img);
             int col = sp.getInt("color_picker", Color.RED);
@@ -163,62 +134,6 @@ public class OverlayScreen extends Service {
             }
         });
 
-        setListeners();
-
-    }
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_MANAGE_MEDIA);
-                intent.addCategory("android.intent.category.DEFAULT");
-                intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-                MainActivity.act.startActivityForResult(intent, 2296);
-            } catch (Exception e) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_REQUEST_MANAGE_MEDIA);
-                MainActivity.act.startActivityForResult(intent, 2296);
-            }
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.act, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    1);
-
-        }
-    }
-
-    public void setListeners() {
-
-        overlay.findViewById(R.id.ll).setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        return true;
-
-                    case MotionEvent.ACTION_UP:
-
-                        //Toast.makeText(getApplicationContext(),initialX+" "+params.x,Toast.LENGTH_SHORT).show();
-                        try {
-                            //wm.removeView(overlay);
-                        } catch (Exception e) {
-                        }
-                        //onDestroy();
-                        return true;
-
-                    case MotionEvent.ACTION_MOVE:
-
-                        return true;
-                }
-                return false;
-            }
-        });
-
     }
 
     @Override
@@ -232,7 +147,5 @@ public class OverlayScreen extends Service {
 
         stopSelf();
     }
-
-
 
 }

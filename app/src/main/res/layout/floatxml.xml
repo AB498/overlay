@@ -76,8 +76,8 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardCornerRadius="35dp"
-            app:cardBackgroundColor="@android:color/transparent">
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="35dp">
 
             <ImageView
                 android:layout_width="70dp"
@@ -90,9 +90,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            app:cardCornerRadius="35dp"
             android:foreground="?android:attr/selectableItemBackground"
-            app:cardBackgroundColor="@android:color/transparent">
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="35dp">
 
             <ImageView
                 android:layout_width="70dp"
