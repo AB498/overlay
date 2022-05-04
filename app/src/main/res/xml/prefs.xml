@@ -32,6 +32,23 @@
             android:title="Choose Background Color" />
 
 
+        <SwitchPreference
+            android:key="show_clock"
+            android:title="Show Clock"
+            ></SwitchPreference>
+
+        <SeekBarPreference
+            android:key="clock size"
+            android:title="Clock Size"
+            ></SeekBarPreference>
+
+        <Preference
+            android:dependency="color_clock"
+            android:key="color_picker_clock"
+            android:summary="Color of clock on overlay"
+            android:title="Choose Clock Color" />
+
+
     </PreferenceCategory>
 
 
