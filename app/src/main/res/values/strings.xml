@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">UnlockReceiver</string>
+    <string name="app_name">Unlock to Home (Safe Unlock)</string>
+    <string name="accessibility_service_label">Access Label</string>
 </resources>

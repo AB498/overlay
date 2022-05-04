@@ -19,9 +19,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.dd.CircularProgressButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -102,12 +104,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Log.v("App", "Build Version Greater than or equal to M: " + Build.VERSION_CODES.M);
                         checkDrawOverlayPermission();
+
+                        PreferenceCategory myCategory = (PreferenceCategory) findPreference("main");
+                        myCategory.removePreference(preference);
+
                     } else {
                     }
+                }else{
+
                 }
                 return false;
             }
         });
+
+        CircularProgressButton run = new CircularProgressButton(getActivity());
+
+
+
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -118,6 +131,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
         return false;
+
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

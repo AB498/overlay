@@ -2,7 +2,8 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Main">
+    <PreferenceCategory android:title="Main"
+        android:key="main">
 
         <SwitchPreferenceCompat
             android:key="toggle_overlay"

@@ -29,6 +29,8 @@ android {
 
 dependencies {
 
+    implementation 'com.github.dmytrodanylyk:circular-progress-button:1.2'
+
     implementation 'com.jaredrummler:colorpicker:1.1.0'
 
     implementation 'androidx.preference:preference:1.2.0'

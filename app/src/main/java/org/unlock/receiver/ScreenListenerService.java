@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -25,6 +26,7 @@ import java.util.Objects;
 public class ScreenListenerService extends Service {
 
     private static final String ACTION_STOP_LISTEN = "action_stop_listen";
+
     BroadcastReceiver screenReceiver;
 
     @Nullable
@@ -131,10 +133,17 @@ public class ScreenListenerService extends Service {
             public void onReceive(Context context, Intent intent) {
                 switch (Objects.requireNonNull(intent.getAction())) {
                     case Intent.ACTION_SCREEN_ON:
+  ///                      Toast.makeText(getApplicationContext(), "on", Toast.LENGTH_SHORT).show();
+                        MyService.screenOn=true;
                         break;
                     case Intent.ACTION_SCREEN_OFF:
-                        Intent launchIntent = new Intent(context, OverlayScreen.class);
-                        startService(launchIntent);
+                        //MyService.lastPackage=MyService.currPackage;
+                        //Toast.makeText(getApplicationContext(), "SCR off", Toast.LENGTH_SHORT).show();
+
+                        //Intent launchIntent = new Intent(context, OverlayScreen.class);
+                        //startService(launchIntent);
+                        MyService.screenOn=false;
+                        MyService.strt();
                         break;
                 }
             }
