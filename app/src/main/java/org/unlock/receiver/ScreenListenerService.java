@@ -1,11 +1,13 @@
 package org.unlock.receiver;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,12 +17,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ScreenListenerService extends Service {
@@ -134,15 +136,26 @@ public class ScreenListenerService extends Service {
                 switch (Objects.requireNonNull(intent.getAction())) {
                     case Intent.ACTION_SCREEN_ON:
   ///                      Toast.makeText(getApplicationContext(), "on", Toast.LENGTH_SHORT).show();
+
                         MyService.screenOn=true;
                         break;
                     case Intent.ACTION_SCREEN_OFF:
                         //MyService.lastPackage=MyService.currPackage;
                         //Toast.makeText(getApplicationContext(), "SCR off", Toast.LENGTH_SHORT).show();
 
-                        //Intent launchIntent = new Intent(context, OverlayScreen.class);
-                        //startService(launchIntent);
+//                        Intent launchIntent = new Intent(context, ScreenActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(launchIntent);
                         MyService.screenOn=false;
+                        if(true || !PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("isActive", false)){
+                           // Toast.makeText(getApplicationContext(), "act", Toast.LENGTH_SHORT).show();
+                            MyService.strt();
+
+                        }else{
+                            Intent i = new Intent(getApplicationContext(), ScreenActivity.class);
+                            i.setAction(Intent.ACTION_MAIN);
+                            i.addCategory(Intent.CATEGORY_LAUNCHER);
+                            startActivity(i);
+                        }
                         MyService.strt();
                         break;
                 }
@@ -162,4 +175,10 @@ public class ScreenListenerService extends Service {
         unregisterReceiver(screenReceiver);
     }
 
+    public boolean isForeground(String myPackage) {
+        ActivityManager manager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(myPackage);
+    }
 }

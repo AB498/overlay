@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Main"
-        android:key="main">
+    <PreferenceCategory
+        android:key="main"
+        android:title="General">
 
         <SwitchPreferenceCompat
             android:key="toggle_overlay"
-            android:summaryOff="Tap to enable overlay permission"
-            android:summaryOn="Overlay enabled"
-            android:title="Enable Overlay" />
+            android:summaryOff="Tap to enable Accessibility"
+            android:summaryOn="Accessibility enabled"
+            android:title="Enable Accessibility" />
 
         <SwitchPreferenceCompat
             android:dependency="toggle_overlay"
             android:key="on"
-            android:summary="Whether to show overlay"
+
             android:title="Turn On" />
+
 
         <SwitchPreferenceCompat
             android:dependency="toggle_overlay"
@@ -33,20 +36,45 @@
 
 
         <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="toggle_overlay"
             android:key="show_clock"
-            android:title="Show Clock"
-            ></SwitchPreference>
+            android:title="Show Clock" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="show_clock"
+            android:key="use_analog"
+            android:title="Use Analog Clock" />
 
         <SeekBarPreference
-            android:key="clock size"
+            android:defaultValue="50"
+            android:dependency="show_clock"
+            android:key="clock_size"
+            android:max="100"
             android:title="Clock Size"
-            ></SeekBarPreference>
+            app:min="5"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
+            android:defaultValue="50"
+            android:dependency="show_clock"
+            android:key="clock_padding"
+            android:max="100"
+            android:title="Padding of Clock"
+            app:min="5"
+            app:showSeekBarValue="true" />
+
 
         <Preference
-            android:dependency="color_clock"
+            android:dependency="show_clock"
             android:key="color_picker_clock"
             android:summary="Color of clock on overlay"
             android:title="Choose Clock Color" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="toggle_overlay"
+            android:key="use_quick_launch"
+            android:title="Show Quick Launch Icons" />
 
 
     </PreferenceCategory>

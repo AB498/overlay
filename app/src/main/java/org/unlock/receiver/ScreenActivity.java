@@ -1,6 +1,7 @@
 package org.unlock.receiver;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,11 +28,11 @@ import com.arbelkilani.clock.Clock;
 public class ScreenActivity extends AppCompatActivity {
     View overlay;
     CardView btn1, btn2, btn3;
-
+public static Activity act;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+act=this;
         overlay = LayoutInflater.from(this).inflate(R.layout.floatxml, null);
 
 
@@ -131,5 +132,17 @@ public class ScreenActivity extends AppCompatActivity {
         });
 
         //MainActivity.act.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isActive", false).commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("isActive", true).commit();
     }
 }

@@ -2,6 +2,7 @@ package org.unlock.receiver;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,8 @@ import androidx.preference.PreferenceManager;
 
 import com.dd.CircularProgressButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
+
+import java.util.List;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private SharedPreferences sharedPreferences;
@@ -101,15 +104,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 boolean on = sharedPreferences.getBoolean("toggle_overlay", false);
                 if (on) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        Log.v("App", "Build Version Greater than or equal to M: " + Build.VERSION_CODES.M);
-                        checkDrawOverlayPermission();
 
-                        PreferenceCategory myCategory = (PreferenceCategory) findPreference("main");
-                        myCategory.removePreference(preference);
+                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    getActivity().startActivityForResult(intent, 0);
 
-                    } else {
-                    }
                 }else{
 
                 }
@@ -131,9 +129,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         }
         return false;
-
-
-
+    }
+    public boolean isForeground(String myPackage) {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(myPackage);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

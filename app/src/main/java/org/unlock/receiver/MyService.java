@@ -30,6 +30,12 @@ public class MyService extends AccessibilityService {
 
     }
 
+    public static void strt() {
+        Intent fullScreenIntent = new Intent(mMS, ScreenActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mMS.getApplicationContext().startActivity(fullScreenIntent);
+
+    }
+
     @Override
     public void onInterrupt() {
 
@@ -45,8 +51,7 @@ public class MyService extends AccessibilityService {
 
         // Set the type of events that this service wants to listen to. Others
         // won't be passed to this service.
-        info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED |
-                AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_WINDOWS_CHANGED | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+        info.eventTypes = AccessibilityEvent.TYPE_WINDOWS_CHANGED | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
 
         // If you only want this service to work with specific applications, set their
         // package names here. Otherwise, when the service is activated, it will listen
@@ -69,34 +74,38 @@ public class MyService extends AccessibilityService {
         this.setServiceInfo(info);
 
     }
-public static void strt(){
-    Intent fullScreenIntent = new Intent(mMS, ScreenActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    mMS.getApplicationContext().startActivity(fullScreenIntent);
 
-}
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (!screenOn) {
 
-            Intent fullScreenIntent = new Intent(this, ScreenActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //startActivity(fullScreenIntent);
-            //fullScreenIntent.putExtra(Constants.NOTIFICATION_IDS, notificationId);
-            //return PendingIntent.getActivity(this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-lastPackage=(String) event.getPackageName();
+        try {
+            if (event.getPackageName() != null) {
 
-        }
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            //Log.d("Foreground App", event.getPackageName().toString());
-            currPackage = (String) event.getPackageName();
+                //fullScreenIntent.putExtra(Constants.NOTIFICATION_IDS, notificationId);
+                //return PendingIntent.getActivity(this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                lastPackage = (String) event.getPackageName();
 
-            Toast.makeText(getApplicationContext(), event.getPackageName() + " " + lastPackage, Toast.LENGTH_LONG).show();
+                //Log.d("Foreground App", event.getPackageName().toString());
+                currPackage = (String) event.getPackageName();
+//                Toast.makeText(getApplicationContext(), event.getPackageName() + " " + lastPackage, Toast.LENGTH_LONG).show();
+
+            } else
+                return;
+
             if (!event.getPackageName().equals(lastPackage) && !event.getPackageName().equals("org.unlock.receiver")) {
                 if (isMyServiceRunning(OverlayScreen.class))
-                ;//stopService(new Intent(getApplicationContext(), OverlayScreen.class));
+                    ;//stopService(new Intent(getApplicationContext(), OverlayScreen.class));
 
             }
+            if (!screenOn) {
 
+//            Intent fullScreenIntent = new Intent(this, ScreenActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(fullScreenIntent);
+
+            }
+        } catch (Exception e) {
         }
+
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
