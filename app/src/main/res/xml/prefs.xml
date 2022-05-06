@@ -54,15 +54,6 @@
             android:title="Clock Size"
             app:min="5"
             app:showSeekBarValue="true" />
-        <SeekBarPreference
-            android:defaultValue="50"
-            android:dependency="show_clock"
-            android:key="clock_padding"
-            android:max="100"
-            android:title="Padding of Clock"
-            app:min="5"
-            app:showSeekBarValue="true" />
-
 
         <Preference
             android:dependency="show_clock"
@@ -76,6 +67,11 @@
             android:key="use_quick_launch"
             android:title="Show Quick Launch Icons" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="toggle_overlay"
+            android:key="show_border"
+            android:title="Show Border Around Clock" />
 
     </PreferenceCategory>
 

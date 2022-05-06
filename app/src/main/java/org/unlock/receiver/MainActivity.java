@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.act = this;
-
 
         if (getIntent().getStringExtra("crash") != null) {
             String mLog = getIntent().getStringExtra("crashInfo");
@@ -97,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
     @Override
     public void onColorSelected(int dialogId, int color) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        sp.edit().putInt("color_picker", color).commit();
+        if (dialogId == 1) sp.edit().putInt("color_picker", color).commit();
+        Toast.makeText(this,color+" "+ Color.BLUE,Toast.LENGTH_LONG).show();
+        if (dialogId == 2) sp.edit().putInt("color_picker_clock", color).commit();
     }
 
     @Override

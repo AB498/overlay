@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -36,15 +34,27 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.prefs, rootKey);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        Preference myPref = findPreference("color_picker");
-        myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        Preference color_picker = findPreference("color_picker");
+        color_picker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(@NonNull Preference preference) {
                 int color = sharedPreferences.getInt("color_picker", Color.RED);
-                ColorPickerDialog.newBuilder().setColor(color).show(getActivity());
+                ColorPickerDialog.newBuilder().setDialogId(1).setColor(color).show(getActivity());
                 return false;
             }
         });
+
+        Preference color_picker_clock = findPreference("color_picker_clock");
+        color_picker_clock.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(@NonNull Preference preference) {
+                int color = sharedPreferences.getInt("color_picker_clock", Color.BLACK);
+                ColorPickerDialog.newBuilder().setDialogId(2).setColor(color).show(getActivity());
+                return false;
+            }
+        });
+
+
 
         Preference start = findPreference("on");
         start.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -52,6 +62,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(@NonNull Preference preference) {
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 boolean on = sharedPreferences.getBoolean("on", false);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(getActivity())) {
+
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getActivity().getPackageName()));
+                        startActivityForResult(intent, 973);
+                        Toast.makeText(getActivity(), "Enable Overlay Permission First!", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                }
                 if (on) {
                     if (!isMyServiceRunning(ScreenListenerService.class)) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -104,11 +125,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 boolean on = sharedPreferences.getBoolean("toggle_overlay", false);
                 if (on) {
+                    // check if we already  have permission to draw over other apps
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (!Settings.canDrawOverlays(getActivity())) {
 
-                    Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                    getActivity().startActivityForResult(intent, 0);
-
-                }else{
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + getActivity().getPackageName()));
+                            startActivityForResult(intent, 973);
+                        }
+                    }
+                } else {
 
                 }
                 return false;
@@ -116,8 +142,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         CircularProgressButton run = new CircularProgressButton(getActivity());
-
-
 
     }
 
@@ -130,6 +154,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
         return false;
     }
+
     public boolean isForeground(String myPackage) {
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);

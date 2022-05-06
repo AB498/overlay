@@ -137,26 +137,12 @@ public class ScreenListenerService extends Service {
                     case Intent.ACTION_SCREEN_ON:
   ///                      Toast.makeText(getApplicationContext(), "on", Toast.LENGTH_SHORT).show();
 
-                        MyService.screenOn=true;
                         break;
                     case Intent.ACTION_SCREEN_OFF:
-                        //MyService.lastPackage=MyService.currPackage;
-                        //Toast.makeText(getApplicationContext(), "SCR off", Toast.LENGTH_SHORT).show();
 
-//                        Intent launchIntent = new Intent(context, ScreenActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(launchIntent);
-                        MyService.screenOn=false;
-                        if(true || !PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("isActive", false)){
-                           // Toast.makeText(getApplicationContext(), "act", Toast.LENGTH_SHORT).show();
-                            MyService.strt();
+                        Intent i = new Intent(getApplicationContext(), OverlayScreen.class);
+                        startService(i);
 
-                        }else{
-                            Intent i = new Intent(getApplicationContext(), ScreenActivity.class);
-                            i.setAction(Intent.ACTION_MAIN);
-                            i.addCategory(Intent.CATEGORY_LAUNCHER);
-                            startActivity(i);
-                        }
-                        MyService.strt();
                         break;
                 }
             }

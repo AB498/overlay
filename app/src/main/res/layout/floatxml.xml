@@ -33,16 +33,20 @@
     </FrameLayout>
 
     <com.arbelkilani.clock.Clock
+        app:show_border="true"
         android:id="@+id/clock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:border_color="@color/black"
-        app:border_radius_rx="15"
+        app:border_radius_rx="50"
+        app:border_radius_ry="15"
+android:layout_margin="25dp"
         app:border_style="rounded_rectangle"
 
         app:clock_type="numeric" />
 
     <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/quick_launch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"

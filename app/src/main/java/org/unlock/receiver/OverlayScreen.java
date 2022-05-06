@@ -15,6 +15,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -23,15 +25,19 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
-public class OverlayScreen extends Service {
+import com.arbelkilani.clock.Clock;
+import com.arbelkilani.clock.enumeration.ClockType;
 
+public class OverlayScreen extends Service {
     WindowManager wm;
     WindowManager.LayoutParams params;
     View overlay;
     CardView btn1, btn2, btn3;
-
+SharedPreferences sharedPreferences;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -134,8 +140,36 @@ public class OverlayScreen extends Service {
             }
         });
 
+        customizeOverlay(overlay);
     }
 
+    public void customizeOverlay(View overlay){
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        Clock clock = overlay.findViewById(R.id.clock);
+        int clock_size = 100-((int)sharedPreferences.getInt("clock_size",25));
+        int clock_color = sharedPreferences.getInt("color_picker_clock", Color.BLACK);
+        boolean use_analog = sharedPreferences.getBoolean("use_analog",false);
+        boolean show_border = sharedPreferences.getBoolean("show_border",true);
+        boolean show_quick_launch = sharedPreferences.getBoolean("show_quick_launch",true);
+
+        if(use_analog)clock.setClockType(ClockType.analogical);
+        else clock.setClockType(ClockType.numeric);
+        if(show_border)clock.setShowBorder(true);
+        else clock.setShowBorder(false);
+        if(show_quick_launch)((View)overlay.findViewById(R.id.quick_launch)).setVisibility(View.VISIBLE);
+        else ((View)overlay.findViewById(R.id.quick_launch)).setVisibility(View.GONE);
+
+        LayoutParams params = (LayoutParams) new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+        );
+        params.setMargins(clock_size,clock_size,clock_size,clock_size);
+clock.setLayoutParams(params);
+//clock.setBorderColor(Color.BLUE);
+//clock.setValuesColor(Color.BLACK);
+    }
     @Override
     public void onDestroy() {
 
